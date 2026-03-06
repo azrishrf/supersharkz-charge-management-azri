@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { Charge } from "../types/charge";
+
+type StatusFilter = "ALL" | "UNPAID" | "PARTIAL" | "PAID";
 
 interface ChargeTableProps {
   charges: Charge[];
@@ -34,24 +37,56 @@ const statusStyles: Record<string, string> = {
   UNPAID: "bg-red-100 text-red-700",
 };
 
+const filterStyles: Record<StatusFilter, string> = {
+  ALL: "bg-gray-900 text-white",
+  UNPAID: "bg-red-600 text-white",
+  PARTIAL: "bg-amber-500 text-white",
+  PAID: "bg-green-600 text-white",
+};
+
+const filterLabels: StatusFilter[] = ["ALL", "UNPAID", "PARTIAL", "PAID"];
+
 export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTableProps) {
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+
+  const sorted = [...charges].sort(
+    (a, b) => new Date(b.date_charged).getTime() - new Date(a.date_charged).getTime(),
+  );
+
+  const filtered =
+    statusFilter === "ALL" ? sorted : sorted.filter((c) => getStatus(c) === statusFilter);
+
   return (
     <div className="bg-white rounded-xl border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-100">
+      <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 className="text-lg font-semibold text-gray-900">
           All Charges{" "}
           <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-            {charges.length}
+            {filtered.length}
           </span>
         </h2>
+        <div className="flex items-center gap-1">
+          {filterLabels.map((f) => (
+            <button
+              key={f}
+              onClick={() => setStatusFilter(f)}
+              className={`px-3 py-1 text-xs font-semibold rounded-full cursor-pointer transition-all duration-200 ${
+                statusFilter === f ? filterStyles[f] : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left">Charge ID</th>
+              <th className="px-6 py-3 text-left">Student ID</th>
               <th className="px-6 py-3 text-left">Date</th>
-              <th className="px-6 py-3 text-left">Student</th>
               <th className="px-6 py-3 text-left">Status</th>
               <th className="px-6 py-3 text-right">Charged</th>
               <th className="px-6 py-3 text-right">Paid</th>
@@ -60,17 +95,20 @@ export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTablePr
             </tr>
           </thead>
           <tbody>
-            {charges.map((charge) => {
+            {filtered.map((charge) => {
               const status = getStatus(charge);
               const outstanding = charge.charge_amount - charge.paid_amount;
 
               return (
                 <tr key={charge.charge_id} className="border-t border-gray-50 hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {formatDate(charge.date_charged)}
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {charge.charge_id}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {charge.student_id}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {formatDate(charge.date_charged)}
                   </td>
                   <td className="px-6 py-4">
                     <span
@@ -108,9 +146,15 @@ export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTablePr
           </tbody>
         </table>
 
-        {charges.length === 0 && (
+        {filtered.length === 0 && (
           <div className="px-6 py-12 text-center text-sm text-gray-400">
-            No charges found. Click &ldquo;New Charge&rdquo; to add one.
+            {charges.length === 0 ? (
+              <>No charges found. Click &ldquo;New Charge&rdquo; to add one.</>
+            ) : (
+              <>
+                No <span className="font-semibold">{statusFilter}</span> charges found.
+              </>
+            )}
           </div>
         )}
       </div>
