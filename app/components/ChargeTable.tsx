@@ -49,10 +49,12 @@ const filterLabels: StatusFilter[] = ["ALL", "UNPAID", "PARTIAL", "PAID"];
 export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTableProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
+  // Newest date first — most recent activity is what admins need to see
   const sorted = [...charges].sort(
     (a, b) => new Date(b.date_charged).getTime() - new Date(a.date_charged).getTime(),
   );
 
+  // Apply status filter on top of sorted list; "ALL" bypasses filtering
   const filtered =
     statusFilter === "ALL" ? sorted : sorted.filter((c) => getStatus(c) === statusFilter);
 
@@ -81,9 +83,9 @@ export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTablePr
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="min-w-full">
           <thead>
-            <tr className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <tr className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
               <th className="px-6 py-3 text-left">Charge ID</th>
               <th className="px-6 py-3 text-left">Student ID</th>
               <th className="px-6 py-3 text-left">Date</th>
@@ -123,6 +125,7 @@ export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTablePr
                   <td className="px-6 py-4 text-sm text-gray-700 text-right tabular-nums">
                     {formatCurrency(charge.paid_amount)}
                   </td>
+                  {/* Outstanding is derived: charge_amount - paid_amount. Red when still owed. */}
                   <td
                     className={`px-6 py-4 text-sm font-semibold text-right tabular-nums ${
                       outstanding > 0 ? "text-red-500" : "text-gray-700"

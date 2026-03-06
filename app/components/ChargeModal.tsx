@@ -5,6 +5,7 @@ import { Charge } from "../types/charge";
 
 interface ChargeModalProps {
   charge: Charge | null; // null = adding new, object = editing
+  charges: Charge[]; // full list — used to determine the next charge ID
   onSave: (charge: Charge) => void;
   onClose: () => void;
 }
@@ -16,11 +17,16 @@ interface FormErrors {
   date_charged?: string;
 }
 
-function generateChargeId(): string {
-  return `chg_${Date.now().toString(36)}`;
+// Generates the next sequential charge ID (e.g. chg_006) based on existing charges
+function generateChargeId(charges: Charge[]): string {
+  const nums = charges
+    .map((c) => parseInt(c.charge_id.replace("chg_", ""), 10))
+    .filter((n) => !isNaN(n));
+  const next = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+  return `chg_${String(next).padStart(3, "0")}`;
 }
 
-export default function ChargeModal({ charge, onSave, onClose }: ChargeModalProps) {
+export default function ChargeModal({ charge, charges, onSave, onClose }: ChargeModalProps) {
   const isEditing = charge !== null;
 
   const [studentId, setStudentId] = useState(charge?.student_id ?? "");
@@ -31,6 +37,7 @@ export default function ChargeModal({ charge, onSave, onClose }: ChargeModalProp
   const [isVisible, setIsVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Disables Save button in edit mode when nothing has actually changed
   const hasChanges =
     !isEditing ||
     studentId !== (charge?.student_id ?? "") ||
@@ -83,7 +90,7 @@ export default function ChargeModal({ charge, onSave, onClose }: ChargeModalProp
     if (Object.keys(formErrors).length > 0) return;
 
     const savedCharge: Charge = {
-      charge_id: charge?.charge_id ?? generateChargeId(),
+      charge_id: charge?.charge_id ?? generateChargeId(charges),
       charge_amount: parseFloat(parseFloat(chargeAmount).toFixed(2)),
       paid_amount: parseFloat(parseFloat(paidAmount || "0").toFixed(2)),
       student_id: studentId.trim(),

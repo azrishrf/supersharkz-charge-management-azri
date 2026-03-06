@@ -28,8 +28,10 @@ export default function Home() {
     setCharges((prev) => {
       const exists = prev.find((c) => c.charge_id === saved.charge_id);
       if (exists) {
+        // Editing an existing charge — swap it out while keeping its position in the list
         return prev.map((c) => (c.charge_id === saved.charge_id ? saved : c));
       }
+      // Adding a new charge — put it at the top so the admin sees it immediately
       return [saved, ...prev];
     });
     setModalOpen(false);
@@ -84,7 +86,12 @@ export default function Home() {
 
       {/* Charge Modal */}
       {modalOpen && (
-        <ChargeModal charge={editingCharge} onSave={handleSave} onClose={handleCloseModal} />
+        <ChargeModal
+          charge={editingCharge}
+          charges={charges}
+          onSave={handleSave}
+          onClose={handleCloseModal}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
