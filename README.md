@@ -2,6 +2,10 @@
 
 A single-page charge recording system for Supersharkz Swim School. Built with Next.js, Tailwind CSS, and TypeScript.
 
+## Live Demo
+
+https://supersharkz-charge-management-azri.vercel.app/
+
 ## How to Run
 
 1. Clone the repository.
