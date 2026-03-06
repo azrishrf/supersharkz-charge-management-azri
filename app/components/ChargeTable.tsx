@@ -94,19 +94,11 @@ export default function ChargeTable({ charges, onEdit, onDelete }: ChargeTablePr
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => onEdit(charge)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 cursor-pointer font-semibold"
-                      >
+                      <button onClick={() => onEdit(charge)} className="btn-edit">
                         <FiEdit className="w-4 h-4" />
-                        Edit
                       </button>
-                      <button
-                        onClick={() => onDelete(charge.charge_id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-white bg-red-600 rounded-xl hover:bg-red-700 cursor-pointer font-semibold"
-                      >
+                      <button onClick={() => onDelete(charge.charge_id)} className="btn-danger">
                         <FiTrash2 className="w-4 h-4" />
-                        Delete
                       </button>
                     </div>
                   </td>

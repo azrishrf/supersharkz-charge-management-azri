@@ -1,5 +1,43 @@
 @import "tailwindcss";
 
+/* ── Theme ── */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+}
+
+/* ── Base ── */
 body {
+  @apply font-sans;
   font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+}
+
+/* ── Global button defaults ── */
+button {
+  @apply transition-all duration-200;
+}
+
+/* ── Reusable button variants ── */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer;
+  @apply disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none;
+}
+
+.btn-secondary {
+  @apply px-4 py-3 text-sm text-gray-500 hover:text-gray-900 cursor-pointer hover:bg-gray-100 rounded-lg;
+}
+
+.btn-edit {
+  @apply inline-flex items-center gap-1 px-2.5 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer;
+}
+
+.btn-danger {
+  @apply inline-flex items-center gap-1 px-2.5 py-1.5 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg cursor-pointer;
+}
+
+.btn-danger-full {
+  @apply w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 cursor-pointer;
+  @apply disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none;
 }
